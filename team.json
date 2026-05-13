@@ -1,0 +1,29 @@
+[
+    {
+        "university name": "6th October University",
+        "college name": "Faculty of Computer and Information Sciences",
+        "department": "AI",
+        "Course": "Data Science",
+        "PhD": "Reham Husain"
+    },
+    {
+        "team": [
+            {
+                "name": "Abdelrahman Sherif Mahmoud",
+                "id": "202203319"
+            },
+            {
+                "name": "Ahmed Ayman Shaker Helal",
+                "id": "23018538"
+            },
+            {
+                "name": "Abdelrhman Essam Mohamed",
+                "id": "202202258"
+            },
+            {
+                "name": "Ahmed Mohamed Ahmed AbdelAziz",
+                "id": "23013441"
+            }
+        ]
+    }
+]

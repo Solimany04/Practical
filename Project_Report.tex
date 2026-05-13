@@ -1,0 +1,246 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University/School Laboratory Report
+% LaTeX Template
+% Version 4.0 (March 21, 2022)
+%
+% This template originates from:
+% https://www.LaTeXTemplates.com
+%
+% Authors:
+% Vel (vel@latextemplates.com)
+% Linux and Unix Users Group at Virginia Tech Wiki
+%
+% License:
+% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+	letterpaper, % Paper size, specify a4paper (A4) or letterpaper (US letter)
+	10pt, % Default font size, specify 10pt, 11pt or 12pt
+]{CSUniSchoolLabReport}
+
+% \addbibresource{sample.bib} % Bibliography file (located in the same folder as the template)
+
+%----------------------------------------------------------------------------------------
+%	REPORT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{Time Series Analysis: \\ Hourly Energy Consumption} % Report title
+
+\author{Author Name} % Author name(s), add additional authors like: '\& James \textsc{Smith}'
+
+\date{\today} % Date of the report
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert the title, author and date using the information specified above
+
+\begin{center}
+	\begin{tabular}{l l}
+		University: & 6th October University \\
+		College: & Faculty of Computer and Information Sciences \\
+		Department: & AI \\
+		Course: & Data Science \\
+		Instructor: & Dr.\ Reham \textsc{Husain} \\
+		& \\
+		Team: & Abdelrahman Sherif \textsc{Mahmoud} (202203319) \\
+		& Ahmed Ayman Shaker \textsc{Helal} (23018538) \\
+		& Abdelrhman Essam \textsc{Mohamed} (202202258) \\
+		& Ahmed Mohamed Ahmed \textsc{AbdelAziz} (23013441)
+	\end{tabular}
+\end{center}
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\begin{abstract}
+This report presents a comprehensive time series analysis of hourly energy consumption across multiple electrical grid regions. The project entails data ingestion and preprocessing of over 1.09 million records, feature extraction to identify underlying seasonal and temporal patterns, and the application of both statistical moving averages and advanced forecasting algorithms. By evaluating Simple Moving Averages (SMA), Exponential Moving Averages (EMA), and leveraging the Facebook Prophet model, the analysis provides robust demand forecasts and comparative insights into regional energy utilization.
+\end{abstract}
+
+%----------------------------------------------------------------------------------------
+%	INTRODUCTION & OBJECTIVES
+%----------------------------------------------------------------------------------------
+
+\section{Introduction \& Objectives}
+
+Predicting energy consumption is a critical task for grid stability, resource allocation, and sustainable energy management. The primary objectives of this study are to:
+
+\begin{itemize}
+    \item Ingest and unify multi-regional hourly energy consumption datasets.
+    \item Perform Exploratory Data Analysis (EDA) to uncover daily, weekly, and seasonal usage routines.
+    \item Apply and evaluate the predictive accuracy of Simple Moving Averages (SMA) and Exponential Moving Averages (EMA).
+    \item Utilize the Facebook Prophet framework for long-term time series forecasting.
+    \item Conduct a comprehensive regional comparison to highlight consumption disparities across different grids.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%	DATASET DESCRIPTION & PREPROCESSING
+%----------------------------------------------------------------------------------------
+
+\section{Dataset Description \& Preprocessing}
+
+The dataset comprises hourly megawatt (MW) energy consumption readings from multiple regional grids. To facilitate a holistic analysis, individual regional CSV files were concatenated into a unified structured dataset using automated globbing routines.
+
+\textbf{Dataset Characteristics:}
+\begin{itemize}
+    \item \textbf{Total Records:} 1,090,167 hourly observations.
+    \item \textbf{Regions Covered (12):} PJM, PJME, PJMW, NI, AEP, DAYTON, DUQ, DOM, COMED, FE, DEOK, EKPC.
+    \item \textbf{Preprocessing:} The \texttt{Datetime} column was parsed into standard pandas datetime objects and set as the DataFrame index. Subsequent feature engineering extracted granular temporal components: \texttt{Hour}, \texttt{DayOfWeek}, \texttt{Month}, \texttt{Year}, \texttt{DayOfYear}, and \texttt{Quarter}.
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%	EXPLORATORY DATA ANALYSIS (EDA) & SEASONALITY
+%----------------------------------------------------------------------------------------
+
+\section{Exploratory Data Analysis (EDA) \& Seasonality}
+
+Understanding human routines and climatic impacts is essential for modeling energy demand. Through feature extraction, the analysis isolated specific temporal frequencies to evaluate seasonal behavior.
+
+\textbf{Key Analytical Steps:}
+\begin{itemize}
+    \item \textbf{Hourly Trends:} Investigating intra-day peak and off-peak cycles.
+    \item \textbf{Weekly \& Monthly Patterns:} Assessing variations driven by weekday industrial operations versus weekend lulls, as well as seasonal heating and cooling demands across different months.
+\end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{"Images/time features & seasonal analysis.png"}
+	\caption{Time Features \& Seasonal Analysis}
+\end{figure}
+
+%----------------------------------------------------------------------------------------
+%	MOVING AVERAGES & ERROR EVALUATION
+%----------------------------------------------------------------------------------------
+
+\section{Moving Averages \& Error Evaluation}
+
+To smooth out high-frequency noise and identify underlying trends, both Simple Moving Average (SMA) and Exponential Moving Average (EMA) models were implemented over a 30-day window.
+
+\textbf{Methodology \& Formulas:}
+\begin{itemize}
+    \item \textbf{Simple Moving Average (SMA):} Computes the unweighted mean of the previous $n$ data points.
+    \[ SMA_t = \frac{1}{n} \sum_{i=0}^{n-1} Y_{t-i} \]
+    
+    \item \textbf{Exponential Moving Average (EMA):} Applies exponentially decreasing weights, giving higher precedence to recent observations.
+    \[ EMA_t = \alpha Y_t + (1 - \alpha) EMA_{t-1} \]
+    \textit{(where $\alpha$ represents the smoothing factor)}
+\end{itemize}
+
+\textbf{Performance Evaluation:}
+
+The Mean Absolute Error (MAE) was utilized to quantify the prediction accuracy of the moving averages:
+\[ MAE = \frac{1}{n} \sum_{i=1}^{n} |Y_i - \hat{Y}_i| \]
+
+\textbf{Results (30-Day Window):}
+\begin{itemize}
+    \item \textbf{30-Day SMA MAE:} $3266.65$
+    \item \textbf{30-Day EMA MAE:} $2548.81$
+\end{itemize}
+
+\textit{Insight:} The EMA significantly outperformed the SMA, indicating that recent energy consumption values are stronger predictors of immediate future demand due to the responsive nature of the exponential weighting.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{"Images/SMA, EMA, and Error Evaluation.png"}
+	\caption{SMA, EMA, and Error Evaluation}
+\end{figure}
+
+%----------------------------------------------------------------------------------------
+%	TIME SERIES FORECASTING
+%----------------------------------------------------------------------------------------
+
+\section{Time Series Forecasting}
+
+For comprehensive long-term forecasting, the Facebook Prophet model was deployed. Prophet is an additive regression model designed to handle time series data with strong seasonal effects and historical trend changes.
+
+\textbf{Methodology:}
+
+The unified dataset was formatted to meet Prophet's strict input requirements (renaming the target variable to \texttt{y} and the time index to \texttt{ds}). The model was trained to capture daily, weekly, and yearly seasonality autonomously.
+
+\textbf{Forecasting Performance:}
+\begin{itemize}
+    \item \textbf{Prophet Model MAE:} $2883.33$
+\end{itemize}
+
+\textit{Insight:} The Prophet model yielded a robust MAE of 2883.33 over the testing horizon. While its error metric is slightly higher than the short-term 30-Day EMA, Prophet excels in predicting longer horizons and maintaining seasonal structural integrity without relying strictly on the immediate prior lag.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{"Images/Forecasting with Facebook Prophet.png"}
+	\caption{Forecasting with Facebook Prophet}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{"Images/Forecasting with Facebook Prophet 2.png"}
+	\caption{Forecasting with Facebook Prophet 2}
+\end{figure}
+
+%----------------------------------------------------------------------------------------
+%	REGIONAL COMPARISONS
+%----------------------------------------------------------------------------------------
+
+\section{Regional Comparisons}
+
+A cross-regional aggregation was performed to contrast the energy load profiles across the various grid territories. Analyzing these aggregates provides crucial insights for macro-level grid balancing.
+
+\textbf{Highlight Regional Metrics:}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|r|r|r|}
+        \hline
+        \textbf{Region} & \textbf{Average MW} & \textbf{Maximum MW} & \textbf{Minimum MW} \\
+        \hline
+        \textbf{PJM} & 29,766.43 & 54,030.00 & 17,461.00 \\
+        \textbf{PJME} & 32,080.22 & 62,009.00 & 17,461.00 \\
+        \textbf{COMED} & 11,420.15 & 23,753.00 & 7,237.00 \\
+        \textbf{AEP} & 15,499.51 & 25,695.00 & 9,581.00 \\
+        \textbf{DAYTON} & 2,037.85 & 3,746.00 & 851.00 \\
+        \hline
+    \end{tabular}
+    \caption{Regional Metrics Comparison}
+\end{table}
+
+\textit{Insight:} The PJME and PJM regions exhibit significantly higher baseline and peak loads compared to areas like DAYTON, directly correlating with population density, industrial footprint, and geographic coverage.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{"Images/Regional Comparisons.png"}
+	\caption{Regional Comparisons}
+\end{figure}
+
+%----------------------------------------------------------------------------------------
+%	CONCLUSION & FUTURE WORK
+%----------------------------------------------------------------------------------------
+
+\section{Conclusion \& Future Work}
+
+This project successfully ingested and analyzed over a million records of hourly energy consumption data. The integration of engineered time features revealed distinct cyclic patterns critical for accurate modeling. 
+
+\textbf{Conclusions:}
+\begin{itemize}
+    \item The \textbf{Exponential Moving Average (MAE: 2548.81)} proved highly effective for short-term trend smoothing, outperforming the \textbf{Simple Moving Average (MAE: 3266.65)} by reacting more swiftly to recent load shifts.
+    \item The \textbf{Facebook Prophet model} provided a reliable forecasting framework, achieving an \textbf{MAE of 2883.33}, demonstrating its capacity to map complex seasonal structures over extended periods.
+    \item Regional analysis quantified the substantial variance in power loads, with PJME commanding the highest average output (32,080.22 MW).
+\end{itemize}
+
+\textbf{Future Work:}
+
+To further enhance forecasting accuracy and grid reliability, future iterations of this project could:
+\begin{enumerate}
+    \item \textbf{Incorporate Exogenous Variables:} Integrate historical weather data (temperature, humidity) and holiday schedules as regressors in the forecasting models.
+    \item \textbf{Advanced Deep Learning:} Implement Long Short-Term Memory (LSTM) networks or Temporal Fusion Transformers for complex, non-linear pattern recognition.
+    \item \textbf{Real-time Anomaly Detection:} Develop automated pipelines to detect sudden spikes or drops in energy consumption, allowing for rapid grid response.
+\end{enumerate}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
